@@ -14,27 +14,34 @@
 <div id="Facets">
     
 </div>
-    <script>
-        $("#searchterm").keyup(function (e) {
-            var query = $("#searchterm").val();
-            
-            $.post("/quicksearch/q/" + query, null,function (data) {
-                $(".result").empty();
-                $(".result").append("<p>Results for <b>" + query + "</b></p>");
-                $.each(data.Hits, function (i, item) {
-                    $("#" + item.Type).append("<div><a href='" + item.Title + "'>" + item.Title + "</a></div>");
-                });
-                $("#Facets").empty();
-                $.each(data.Facets, function (i, item) {
+<script>
+    var timer;
+    var getSearchResults = function () {
+        var query = $("#searchterm").val();
 
-                    var facet = $("<h4>" + item.Name + "</h4>");
-                    var list = $("<ul></ul>");
-                    $.each(item.Links, function(i, item) {
-                        list.append("<li>" + item.Text + " (" + item.Count + ")");
-                    });
-                    $("#Facets").append(facet);
-                    $("#Facets").append(list);
+        $.post("/quicksearch/q/" + query, null, function(data) {
+            $(".result").empty();
+            $(".result").append("<p>Results for <b>" + query + "</b></p>");
+            $.each(data.Hits, function(i, item) {
+                $("#" + item.Type).append("<div><a href='" + item.Title + "'>" + item.Title + "</a></div>");
+            });
+            $("#Facets").empty();
+            $.each(data.Facets, function(i, item) {
+
+                var facet = $("<h4>" + item.Name + "</h4>");
+                var list = $("<ul></ul>");
+                $.each(item.Links, function(i, item) {
+                    list.append("<li>" + item.Text + " (" + item.Count + ")");
                 });
-            }, "json");
-        });
-    </script>
+                $("#Facets").append(facet);
+                $("#Facets").append(list);
+            });
+        }, "json");
+    };
+    $("#searchterm").keyup(function () {
+        clearTimeout(timer);
+        timer = setTimeout(function() {
+            getSearchResults();
+        }, 200);
+    });
+</script>
