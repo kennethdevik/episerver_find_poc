@@ -32,9 +32,14 @@ namespace DA_POC
             {
                 routeCollection.MapRoute("quicksearch", "quicksearch/q/{query}", new
                 {
-                    controller =
-                        "SearchPage",
+                    controller = "SearchPage",
                     action = "Quick",
+                    query = "*"
+                });
+                routeCollection.MapRoute("autocomplete", "autocomplete/q/{query}", new
+                {
+                    controller = "SearchPage",
+                    action = "Prefix",
                     query = "*"
                 });
 

@@ -73,31 +73,35 @@
 </div>
 <script>
     var timer;
+    var onQuickSearchComplete = function(data) {
+        $("#query").html(query);
+        $(".resultContainer").empty();
+        $.each(data.Hits, function(i, item) {
+            $("#" + item.Type).append("<div><a href='" + item.Title + "'>" + item.Title + "</a></div>");
+        });
+        $("#Facets").empty();
+        $.each(data.Facets, function(i, item) {
+
+            $("#Facets").append("<h4>" + item.Name + "</h4>");
+
+            var list = $("<ul></ul>");
+            $.each(item.Links, function(i, item) {
+                list.append("<li>" + item.Text + " (" + item.Count + ")");
+            });
+            $("#Facets").append(list);
+        });
+        $("#subcontent").show();
+    };
     var getSearchResults = function () {
         var query = $("#searchterm").val();
-
-        $.post("/quicksearch/q/" + query, null, function (data) {
-            $("#query").html(query);
-            $(".resultContainer").empty();
-            $.each(data.Hits, function (i, item) {
-                $("#" + item.Type).append("<div><a href='" + item.Title + "'>" + item.Title + "</a></div>");
-            });
-            $("#Facets").empty();
-            $.each(data.Facets, function (i, item) {
-
-                $("#Facets").append("<h4>" + item.Name + "</h4>");
-                
-                var list = $("<ul></ul>");
-                $.each(item.Links, function (i, item) {
-                    list.append("<li>" + item.Text + " (" + item.Count + ")");
-                });
-                $("#Facets").append(list);
-            });
-            $("#subcontent").show();
-        }, "json");
+        $.post("/quicksearch/q/" + query, null, onQuickSearchComplete, "json");
     };
     $(function() {
-        $("input").focus();
+        $("#searchterm").focus();
+        $("#searchterm").autocomplete({
+            source: "/autocomplete/q/",
+            minLength: 2
+        });
     });
     $("#searchterm").keyup(function () {
         clearTimeout(timer);

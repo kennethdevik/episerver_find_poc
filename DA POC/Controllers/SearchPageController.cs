@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using DA_POC.Models.Pages;
@@ -25,15 +26,28 @@ namespace DA_POC.Controllers
             return View(currentPage);
         }
 
+        public ActionResult Prefix(string term)
+        {
+            var client = Client.CreateFromConfig();
+            var result = client
+                .Search<PageData>()
+                .Filter(x => x.Name.PrefixCaseInsensitive(term))
+                .Select(x => x.Name)
+                .StaticallyCacheFor(TimeSpan.FromHours(1))
+                .GetResult();
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
         public ActionResult Quick(string query)
         {
-                        var client = Client.CreateFromConfig();
+            var client = Client.CreateFromConfig();
             var pages = client
                 .Search<PageData>()
                 .For(query)
                 .TermsFacetFor(data => data.PageTypeName)
                 .TermsFacetFor(data => data.SearchCategories())
-                .Select(n => new Hit{Title = n.PageName, Type = n.PageTypeName})
+                .Select(n => new Hit{Title = n.Name, Type = n.PageTypeName})
                 .GetResult();
 
             var facets = new List<FacetResult>();
