@@ -1,0 +1,9 @@
+﻿@model DA_POC.Models.Pages.Nyhet
+
+@{
+    ViewBag.Title = "title";
+    //Layout = "_Layout";
+}
+
+<h2>title - @Html.PropertyFor(x => x.PageName) </h2>
+<p>@Html.PropertyFor(x => x.MainBody) </p>

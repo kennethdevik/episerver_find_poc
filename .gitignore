@@ -1,6 +1,11 @@
 # Build Folders (you can keep bin if you'd like, to store dlls and pdbs)
-[Bb]in/
+#[Bb]in/
 [Oo]bj/
+
+# Episerver stuff
+AppData/Index/
+AppData/Modules/
+connectionStrings.config
 
 # mstest test results
 TestResults
@@ -89,7 +94,7 @@ csx
 AppPackages/
 
 # Others
-[Bb]in
+#[Bb]in
 [Oo]bj
 sql
 TestResults

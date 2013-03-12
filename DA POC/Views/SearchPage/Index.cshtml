@@ -1,0 +1,40 @@
+﻿@model DA_POC.Models.Pages.SearchPage
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index - Hello world</h2>
+
+<input id="searchterm" />
+<h3>Nyheter</h3>
+<div id="Nyhet" class="result"></div>
+<h3>Personer</h3>
+<div id="Person" class="result"></div>
+<div id="Facets">
+    
+</div>
+    <script>
+        $("#searchterm").keyup(function (e) {
+            var query = $("#searchterm").val();
+            
+            $.post("/quicksearch/q/" + query, null,function (data) {
+                $(".result").empty();
+                $(".result").append("<p>Results for <b>" + query + "</b></p>");
+                $.each(data.Hits, function (i, item) {
+                    $("#" + item.Type).append("<div><a href='" + item.Title + "'>" + item.Title + "</a></div>");
+                });
+                $("#Facets").empty();
+                $.each(data.Facets, function (i, item) {
+
+                    var facet = $("<h4>" + item.Name + "</h4>");
+                    var list = $("<ul></ul>");
+                    $.each(item.Links, function(i, item) {
+                        list.append("<li>" + item.Text + " (" + item.Count + ")");
+                    });
+                    $("#Facets").append(facet);
+                    $("#Facets").append(list);
+                });
+            }, "json");
+        });
+    </script>
