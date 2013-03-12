@@ -4,43 +4,104 @@
     ViewBag.Title = "Index";
 }
 
-<h2>Index - Hello world</h2>
+<style>
+    body {
+        background: #f0fff0;
+        font-family: Georgia;
+        width: 800px;
+        margin: auto;
+    }
+    input {
+        background: #ececec;
+        margin: 20px 20%;
+        width: 60%;
+        font-size: 30px;
+        padding: 10px;
+        border: 2px solid #ccc;
+        border-radius: 15px;
+    }
+    #subcontent {
+        display: none;
+    }
+    #query {
+        font-weight: bold;
+    }
+    #results {
+        float: left;
+        width: 75%;
+    }
+    #helptext {
+        font-size: 16px;
+    }
+    #Facets {
+        float: right;
+        margin-left: 3%;
+        width: 22%;
+    }
+    .result {
+        border: 1px solid #ccc;
+        height: 200px;
+        margin: 10px 0;
+        padding: 10px;
+        position: relative;
+    }
+    .expand {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        padding: 10px;
+        float: right;
+    }
+</style>
 
 <input id="searchterm" />
-<h3>Nyheter</h3>
-<div id="Nyhet" class="result"></div>
-<h3>Personer</h3>
-<div id="Person" class="result"></div>
-<div id="Facets">
-    
+<div id="subcontent">
+    <div id="results">
+        <p id="helptext">Resultater for <span id="query"></span></p>
+        <div class="result">
+            <h3>Nyheter</h3>
+            <div id="Nyhet" class="resultContainer"></div>
+            <a class="expand" href="#">Vis alle</a>
+        </div>
+        <div class="result">
+            <h3>Personer</h3>
+            <div id="Person" class="resultContainer"></div>
+            <a class="expand" href="#">Vis alle</a>
+        </div>
+    </div>
+    <div id="Facets"></div>
 </div>
 <script>
     var timer;
     var getSearchResults = function () {
         var query = $("#searchterm").val();
 
-        $.post("/quicksearch/q/" + query, null, function(data) {
-            $(".result").empty();
-            $(".result").append("<p>Results for <b>" + query + "</b></p>");
-            $.each(data.Hits, function(i, item) {
+        $.post("/quicksearch/q/" + query, null, function (data) {
+            $("#query").html(query);
+            $(".resultContainer").empty();
+            $.each(data.Hits, function (i, item) {
                 $("#" + item.Type).append("<div><a href='" + item.Title + "'>" + item.Title + "</a></div>");
             });
             $("#Facets").empty();
-            $.each(data.Facets, function(i, item) {
+            $.each(data.Facets, function (i, item) {
 
-                var facet = $("<h4>" + item.Name + "</h4>");
+                $("#Facets").append("<h4>" + item.Name + "</h4>");
+                
                 var list = $("<ul></ul>");
-                $.each(item.Links, function(i, item) {
+                $.each(item.Links, function (i, item) {
                     list.append("<li>" + item.Text + " (" + item.Count + ")");
                 });
-                $("#Facets").append(facet);
                 $("#Facets").append(list);
             });
+            $("#subcontent").show();
         }, "json");
     };
+    $(function() {
+        $("input").focus();
+    });
     $("#searchterm").keyup(function () {
         clearTimeout(timer);
-        timer = setTimeout(function() {
+        timer = setTimeout(function () {
             getSearchResults();
         }, 200);
     });
