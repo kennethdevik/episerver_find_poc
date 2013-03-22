@@ -197,6 +197,7 @@
     <Compile Include="Models\Pages\Kategori.cs" />
     <Compile Include="Models\Pages\Nyhet.cs" />
     <Compile Include="Models\Pages\Person.cs" />
+    <Compile Include="Models\Pages\SearchablePage.cs" />
     <Compile Include="Models\Pages\SearchPage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Router.cs" />
