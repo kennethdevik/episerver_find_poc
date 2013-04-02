@@ -42,6 +42,7 @@ namespace DA_POC.Controllers
             var pages = client
                 .Search<Nyhet>()
                 .For(query)
+                .InFields(n => n.PageName, n => n.MainIntro)
                 .TermsFacetFor(data => data.PageTypeName)
                 .TermsFacetFor(data => data.SearchCategories())
                 //.Select(n => new {Title = n.PageName});
@@ -85,14 +86,15 @@ namespace DA_POC.Controllers
             return Json(compositeResult, JsonRequestBehavior.AllowGet);
         }
 
-        private object GetPage(ContentReference reference, IContentLoader repository)
+        private Hit GetPage(ContentReference reference, IContentLoader repository)
         {
-            var pagedata = repository.Get<Nyhet>(reference);
+            var pagedata = repository.Get<SearchablePage>(reference);
             return new Hit
                        {
                            Title = pagedata.PageName,
                            Type = pagedata.PageTypeName,
-                           Content = pagedata.MainBody.ToHtmlString()
+                           MainIntro = pagedata.MainIntro,
+                           Content = pagedata.MainBody.ToHtmlString().Substring(0, 200)
                        };
         }
     }
@@ -104,6 +106,8 @@ namespace DA_POC.Controllers
         public string Type { get; set; }
 
         public string Content { get; set; }
+
+        public string MainIntro { get; set; }
     }
 
     public class FacetResult

@@ -38,9 +38,18 @@
         margin-left: 3%;
         width: 22%;
     }
+    .title {
+        font-weight: bold;
+    }
+    .hit {
+        border: dotted 2px #ccc;
+        border-radius: 5px; 
+        margin: 5px;
+        padding: 5px;
+    }
     .result {
-        border: 1px solid #ccc;
-        height: 200px;
+        border: 2px solid #ccc;
+        /*height: 200px;*/
         margin: 10px 0;
         padding: 10px;
         position: relative;
@@ -77,7 +86,12 @@
         $("#query").html(query);
         $(".resultContainer").empty();
         $.each(data.Hits, function(i, item) {
-            $("#" + item.Type).append("<div><a href='" + item.Title + "'>" + item.Title + "</a></div>");
+            $("#" + item.Type).append(
+                "<div class='hit'>" +
+                    "<div class='title'><a href='" + item.Title + "'>" + item.Title + "</a></div>" +
+                    "<div class='ingress'>" + item.MainIntro + "</div>" +
+                    //"<div class='content'>" + item.Content + "</div>" +
+                "</div>");
         });
         $("#Facets").empty();
         $.each(data.Facets, function(i, item) {
