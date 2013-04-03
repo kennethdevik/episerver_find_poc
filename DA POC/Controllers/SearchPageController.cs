@@ -27,7 +27,7 @@ namespace DA_POC.Controllers
         {
             var client = Client.CreateFromConfig();
             var result = client
-                .Search<PageData>()
+                .Search<SearchablePage>()
                 .Filter(x => x.Name.PrefixCaseInsensitive(term))
                 .Select(x => x.Name)
                 .StaticallyCacheFor(TimeSpan.FromHours(1))
@@ -36,16 +36,21 @@ namespace DA_POC.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult Quick(string query)
+        public ActionResult Quick(string query, int page = 1)
         {
+            var pageSize = 5;
+
             var client = Client.CreateFromConfig();
             var pages = client
-                .Search<Nyhet>()
+                .Search<SearchablePage>()
                 .For(query)
                 .InFields(n => n.PageName, n => n.MainIntro)
+                .ExcludeDeleted()
                 .TermsFacetFor(data => data.PageTypeName)
                 .TermsFacetFor(data => data.SearchCategories())
                 //.Select(n => new {Title = n.PageName});
+                //.Take(pageSize)
+                //.Skip((page-1) * pageSize)
                 .GetContentResult();
 
             var facets = new List<FacetResult>();
@@ -94,7 +99,8 @@ namespace DA_POC.Controllers
                            Title = pagedata.PageName,
                            Type = pagedata.PageTypeName,
                            MainIntro = pagedata.MainIntro,
-                           Content = pagedata.MainBody.ToHtmlString().Substring(0, 200)
+                           Content = pagedata.MainBody != null ? pagedata.MainBody.ToHtmlString().Substring(0, 200) : string.Empty,
+                           ImageUrl =  pagedata.ImageUrl
                        };
         }
     }
@@ -108,6 +114,8 @@ namespace DA_POC.Controllers
         public string Content { get; set; }
 
         public string MainIntro { get; set; }
+
+        public string ImageUrl { get; set; }
     }
 
     public class FacetResult

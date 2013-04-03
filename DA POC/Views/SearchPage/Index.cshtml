@@ -38,6 +38,10 @@
         margin-left: 3%;
         width: 22%;
     }
+    .image {
+        margin-right: 10px;
+        width: 50px;
+    }
     .title {
         font-weight: bold;
     }
@@ -54,6 +58,22 @@
         padding: 10px;
         position: relative;
     }
+    .result ul {
+        list-style-type: none;
+        margin: 0;
+    }
+    .page_navigation {
+        font-size: 1.2em;
+        text-align: center;
+        width: 100%;
+    }
+    .page_navigation a {
+        margin: 0 5px;
+    }
+    .page_navigation a.active_page {
+        font-weight: bold;
+        color: black;
+    }
     .expand {
         position: absolute;
         bottom: 0;
@@ -67,14 +87,16 @@
 <div id="subcontent">
     <div id="results">
         <p id="helptext">Resultater for <span id="query"></span></p>
-        <div class="result">
+        <div id="Nyheter" class="result">
             <h3>Nyheter</h3>
-            <div id="Nyhet" class="resultContainer"></div>
+            <ul id="Nyhet" class="resultContainer content"></ul>
+            <div class="page_navigation"></div>
             <a class="expand" href="#">Vis alle</a>
         </div>
-        <div class="result">
+        <div id="Personer" class="result">
             <h3>Personer</h3>
-            <div id="Person" class="resultContainer"></div>
+            <div id="Person" class="resultContainer content"></div>
+            <div class="page_navigation"></div>
             <a class="expand" href="#">Vis alle</a>
         </div>
     </div>
@@ -85,13 +107,21 @@
     var onQuickSearchComplete = function(data) {
         $("#query").html(query);
         $(".resultContainer").empty();
-        $.each(data.Hits, function(i, item) {
-            $("#" + item.Type).append(
-                "<div class='hit'>" +
-                    "<div class='title'><a href='" + item.Title + "'>" + item.Title + "</a></div>" +
-                    "<div class='ingress'>" + item.MainIntro + "</div>" +
-                    //"<div class='content'>" + item.Content + "</div>" +
-                "</div>");
+        $.each(data.Hits, function (i, item) {
+            if (item.Type === "Nyhet") {
+                $("#" + item.Type).append(
+                    "<li class='hit'>" +
+                        "<div class='title'><a href='" + item.Title + "'>" + item.Title + "</a></div>" +
+                        "<div class='ingress'>" + item.MainIntro + "</div>" +
+                        //"<div class='content'>" + item.Content + "</div>" +
+                        "</li>");
+            } else {
+                $("#" + item.Type).append(
+                    "<div class='hit'>" +
+                        "<span class='image'><img src='" + item.ImageUrl + "' /></span>" +
+                        "<span class='title'><a href='" + item.Title + "'>" + item.Title + "</a></span>" +
+                    "</div>");
+            }
         });
         $("#Facets").empty();
         $.each(data.Facets, function(i, item) {
@@ -105,6 +135,18 @@
             $("#Facets").append(list);
         });
         $("#subcontent").show();
+        $("#Nyheter").pajinate({
+            items_per_page: 2,
+            nav_label_next: "&gt;",
+            nav_label_prev: "&lt;",
+            show_first_last: false
+        });
+        $("#Personer").pajinate({
+            items_per_page: 2,
+            nav_label_next: "&gt;",
+            nav_label_prev: "&lt;",
+            show_first_last: false
+        });
     };
     var getSearchResults = function () {
         var query = $("#searchterm").val();

@@ -26,6 +26,61 @@ namespace DA_POC.Models.Pages
             GroupName = SystemTabNames.Content,
             Order = 2)]
         public override XhtmlString MainBody { get; set; }
-         
+
+        [CultureSpecific]
+        [Editable(true)]
+        [Display(
+            Name = "",
+            GroupName = SystemTabNames.Content,
+            Order = 2)]
+        public virtual string Department { get; set; }
+
+        [CultureSpecific]
+        [Editable(true)]
+        [Display(
+            Name = "",
+            GroupName = SystemTabNames.Content,
+            Order = 2)]
+        public virtual string Email { get; set; }
+
+        [CultureSpecific]
+        [Editable(true)]
+        [Display(
+            Name = "",
+            GroupName = SystemTabNames.Content,
+            Order = 2)]
+        public virtual string FirstName { get; set; }
+
+        [CultureSpecific]
+        [Editable(true)]
+        [Display(
+            Name = "",
+            GroupName = SystemTabNames.Content,
+            Order = 2)]
+        public virtual string Gender { get; set; }
+
+        [CultureSpecific]
+        [Editable(true)]
+        [Display(
+            Name = "",
+            GroupName = SystemTabNames.Content,
+            Order = 2)]
+        public override string ImageUrl { get; set; }
+
+        [CultureSpecific]
+        [Editable(true)]
+        [Display(
+            Name = "",
+            GroupName = SystemTabNames.Content,
+            Order = 2)]
+        public virtual string InterestGroup { get; set; }
+
+        [CultureSpecific]
+        [Editable(true)]
+        [Display(
+            Name = "",
+            GroupName = SystemTabNames.Content,
+            Order = 2)]
+        public virtual string LastName { get; set; }
     }
 }

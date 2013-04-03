@@ -6,5 +6,6 @@ namespace DA_POC.Models.Pages
     {
         public abstract string MainIntro { get; set; }
         public abstract XhtmlString MainBody { get; set; }
+        public abstract string ImageUrl { get; set; }
     }
 }
