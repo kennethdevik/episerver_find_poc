@@ -94,13 +94,15 @@ namespace DA_POC.Controllers
         private Hit GetPage(ContentReference reference, IContentLoader repository)
         {
             var pagedata = repository.Get<SearchablePage>(reference);
+
             return new Hit
                        {
                            Title = pagedata.PageName,
                            Type = pagedata.PageTypeName,
                            MainIntro = pagedata.MainIntro,
                            Content = pagedata.MainBody != null ? pagedata.MainBody.ToHtmlString().Substring(0, 200) : string.Empty,
-                           ImageUrl =  pagedata.ImageUrl
+                           ImageUrl =  pagedata.ImageUrl,
+                           Categories = pagedata.SearchCategories().Aggregate("", (current, c) => current + (", " + c))
                        };
         }
     }
@@ -116,6 +118,8 @@ namespace DA_POC.Controllers
         public string MainIntro { get; set; }
 
         public string ImageUrl { get; set; }
+
+        public string Categories { get; set; }
     }
 
     public class FacetResult

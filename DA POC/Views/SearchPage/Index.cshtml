@@ -43,6 +43,7 @@
         width: 50px;
     }
     .title {
+        clear: right;
         font-weight: bold;
     }
     .hit {
@@ -119,7 +120,10 @@
                 $("#" + item.Type).append(
                     "<div class='hit'>" +
                         "<span class='image'><img src='" + item.ImageUrl + "' /></span>" +
+                        "<span>" +
                         "<span class='title'><a href='" + item.Title + "'>" + item.Title + "</a></span>" +
+                        "<span class='categories'>" + item.Categories + "</span>" +
+                        "</span>" +
                     "</div>");
             }
         });
