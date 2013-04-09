@@ -7,6 +7,8 @@ using EPiServer;
 using EPiServer.Core;
 using EPiServer.Find;
 using EPiServer.Find.Api.Facets;
+using EPiServer.Find.Framework;
+using EPiServer.Find.UnifiedSearch;
 using EPiServer.Web.Mvc;
 using EPiServer.Find.Cms;
 
@@ -36,7 +38,62 @@ namespace DA_POC.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult Quick(string query, int page = 1)
+        public ActionResult Quick(string query)
+        {
+            var pageSize = 5;
+
+            var pages = SearchClient.Instance
+                .UnifiedSearchFor(query)
+                //.Filter(x => x.SearchTitle.Match(query))
+      
+                .TermsFacetFor(x => x.SearchCategories)
+                .TermsFacetFor(x => x.SearchTypeName)
+                .Take(25)
+                //.InFields(n => n.PageName, n => n.MainIntro)
+                //.ExcludeDeleted()
+                //.TermsFacetFor(data => data.PageTypeName)
+                //.TermsFacetFor(data => data.SearchCategories())
+                .GetResult(new HitSpecification() { HighlightExcerpt = true});
+
+            var facets = new List<FacetResult>();
+
+            var categoryFacet = (TermsFacet)pages.Facets["SearchTypeName"];
+            var categoryLinks = new FacetResult
+            {
+                Name = "PageTypes",
+                Links = categoryFacet.Terms.Select(x => new FacetLink
+                {
+                    Text = x.Term,
+                    Count = x.Count
+                })
+            };
+            facets.Add(categoryLinks);
+
+
+            var typeFacet = (TermsFacet)pages.Facets["SearchCategories"];
+            var typeLinks = new FacetResult
+            {
+                Name = "Categories",
+                Links = typeFacet.Terms.Select(x => new FacetLink
+                {
+                    Text = x.Term,
+                    Count = x.Count
+                })
+            };
+            facets.Add(typeLinks);
+
+            //var repository = EPiServer.ServiceLocation.ServiceLocator.Current.GetInstance<IContentRepository>();
+
+            var compositeResult = new
+            {
+                Hits = pages.Select(r => GetPage(r)),
+                Facets = facets,
+            };
+
+            return Json(compositeResult, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult Quick2(string query, int page = 1)
         {
             var pageSize = 5;
 
@@ -84,25 +141,30 @@ namespace DA_POC.Controllers
 
             var compositeResult = new
                 {
-                    Hits = pages.SearchResult.Select(r => GetPage(r.ContentLink, repository)),
+                    //Hits = pages.SearchResult.Select(r => GetPage(r.ContentLink, repository)),
                     Facets = facets,
                 };
 
             return Json(compositeResult, JsonRequestBehavior.AllowGet);
         }
 
-        private Hit GetPage(ContentReference reference, IContentLoader repository)
+        private Hit GetPage(UnifiedSearchHit pagedata)
         {
-            var pagedata = repository.Get<SearchablePage>(reference);
-
+           // var pagedata = repository.Get<SearchablePage>(reference);
+           // var pd = null;
+            // UnifiedSearchHit<EPiServer.Web.Hosting.VersioningFile>
+            if(!(pagedata is UnifiedSearchHit<EPiServer.Web.Hosting.VersioningFile>))
+            {
+                //pd = DataFactory.Instance.
+            }
             return new Hit
                        {
-                           Title = pagedata.PageName,
-                           Type = pagedata.PageTypeName,
-                           MainIntro = pagedata.MainIntro,
-                           Content = pagedata.MainBody != null ? pagedata.MainBody.ToHtmlString().Substring(0, 200) : string.Empty,
-                           ImageUrl =  pagedata.ImageUrl,
-                           Categories = pagedata.SearchCategories().Aggregate("", (current, c) => current + (", " + c))
+                           Title = pagedata.Title,
+                           Type = pagedata.TypeName,
+                           MainIntro = pagedata.Excerpt,
+                           Content = pagedata.Excerpt != null ? pagedata.Excerpt : string.Empty,
+                           ImageUrl =  pagedata.ImageUri != null ? pagedata.ImageUri.ToString() : string.Empty,
+                           Categories = string.Empty//pagedata.SearchCategories().Aggregate("", (current, c) => current + (", " + c))
                        };
         }
     }

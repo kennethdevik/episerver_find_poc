@@ -20,6 +20,10 @@
         border: 2px solid #ccc;
         border-radius: 15px;
     }
+    em {
+        font-weight: bolder;
+
+    }
     #subcontent {
         display: none;
     }
@@ -88,7 +92,7 @@
 <div id="subcontent">
     <div id="results">
         <p id="helptext">Resultater for <span id="query"></span></p>
-        <div id="Nyheter" class="result">
+        <div id="Nyheterer" class="result">
             <h3>Nyheter</h3>
             <ul id="Nyhet" class="resultContainer content"></ul>
             <div class="page_navigation"></div>
@@ -97,6 +101,12 @@
         <div id="Personer" class="result">
             <h3>Personer</h3>
             <div id="Person" class="resultContainer content"></div>
+            <div class="page_navigation"></div>
+            <a class="expand" href="#">Vis alle</a>
+        </div>
+                <div id="Filer" class="result">
+            <h3>Filer</h3>
+            <div id="File" class="resultContainer content"></div>
             <div class="page_navigation"></div>
             <a class="expand" href="#">Vis alle</a>
         </div>
@@ -116,7 +126,7 @@
                         "<div class='ingress'>" + item.MainIntro + "</div>" +
                         //"<div class='content'>" + item.Content + "</div>" +
                         "</li>");
-            } else {
+            } else if (item.Type === "Person") {
                 $("#" + item.Type).append(
                     "<div class='hit'>" +
                         "<span class='image'><img src='" + item.ImageUrl + "' /></span>" +
@@ -124,7 +134,14 @@
                         "<span class='title'><a href='" + item.Title + "'>" + item.Title + "</a></span>" +
                         "<span class='categories'>" + item.Categories + "</span>" +
                         "</span>" +
-                    "</div>");
+                        "</div>");
+            } else if (item.Type === "File") {
+                $("#" + item.Type).append(
+                    "<li class='hit'>" +
+                        "<div class='title'><a href='" + item.Title + "'>" + item.Title + "</a></div>" +
+                        "<div class='ingress'>" + item.MainIntro + "</div>" +
+                        //"<div class='content'>" + item.Content + "</div>" +
+                        "</li>");
             }
         });
         $("#Facets").empty();
@@ -139,7 +156,7 @@
             $("#Facets").append(list);
         });
         $("#subcontent").show();
-        $("#Nyheter").pajinate({
+        $("#Nyheterer").pajinate({
             items_per_page: 2,
             nav_label_next: "&gt;",
             nav_label_prev: "&lt;",
